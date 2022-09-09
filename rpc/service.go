@@ -83,6 +83,7 @@ func (r *serviceRegistry) registerName(name string, rcvr interface{}) error {
 		r.services[name] = svc
 	}
 	for name, cb := range callbacks {
+		fmt.Println("----------------api", name, cb)
 		if cb.isSubscribe {
 			svc.subscriptions[name] = cb
 		} else {
@@ -126,6 +127,7 @@ func suitableCallbacks(receiver reflect.Value) map[string]*callback {
 			continue // function invalid
 		}
 		name := formatName(method.Name)
+		fmt.Println("============ ", method.Func, name)
 		callbacks[name] = cb
 	}
 	return callbacks

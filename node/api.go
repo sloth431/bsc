@@ -202,6 +202,7 @@ func (api *privateAdminAPI) StartHTTP(host *string, port *int, cors *string, api
 	if apis != nil {
 		config.Modules = nil
 		for _, m := range strings.Split(*apis, ",") {
+			fmt.Println("-----------apis", apis)
 			config.Modules = append(config.Modules, strings.TrimSpace(m))
 		}
 	}
