@@ -464,23 +464,22 @@ func (w *worker) newWorkLoop(recommit time.Duration) {
 			commit(true, commitInterruptNewHead)
 
 		case head := <-w.chainHeadCh:
-			//if !w.isRunning() {
-			//	continue
-			//}
+			if !w.isRunning() {
+				continue
+			}
 			clearPending(head.Block.NumberU64())
 			timestamp = time.Now().Unix()
-			//if p, ok := w.engine.(*parlia.Parlia); ok {
-			//	signedRecent, err := p.SignRecently(w.chain, head.Block.Header())
-			//	if err != nil {
-			//		log.Info("Not allowed to propose block", "err", err)
-			//		continue
-			//	}
-			//	if signedRecent {
-			//		log.Info("Signed recently, must wait")
-			//		continue
-			//	}
-			//}
-			log.Info("get chainHead even")
+			if p, ok := w.engine.(*parlia.Parlia); ok {
+				signedRecent, err := p.SignRecently(w.chain, head.Block.Header())
+				if err != nil {
+					log.Info("Not allowed to propose block", "err", err)
+					continue
+				}
+				if signedRecent {
+					log.Info("Signed recently, must wait")
+					continue
+				}
+			}
 			commit(true, commitInterruptNewHead)
 
 		case <-timer.C:
@@ -610,7 +609,6 @@ func (w *worker) mainLoop() {
 			// already included in the current sealing block. These transactions will
 			// be automatically eliminated.
 			if !w.isRunning() && w.current != nil {
-				log.Info("not running miner, got txsChannel event", len(ev.Txs))
 				start := time.Now()
 				// If block is already full, abort
 				if gp := w.current.gasPool; gp != nil && gp.Gas() < params.TxGas {
@@ -842,7 +840,6 @@ func (w *worker) commitUncle(env *environment, uncle *types.Header) error {
 
 // updateSnapshot updates pending snapshot block, receipts and state.
 func (w *worker) updateSnapshot(env *environment) {
-	log.Info("=--------------- miner update snapshot after process incoming txs")
 	w.snapshotMu.Lock()
 	defer w.snapshotMu.Unlock()
 
