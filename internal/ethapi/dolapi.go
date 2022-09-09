@@ -69,7 +69,7 @@ func DoCall2(ctx context.Context, b Backend, args TransactionArgs, blockNrOrHash
 	}
 
 	logs := state.Logs()
-	fmt.Println("---------------- logs from estimategas", logs[0].Address, logs[0].Data, logs[0].TxHash, logs[0].Topics)
+	fmt.Printf("---------------- logs from estimategas %v", logs)
 	return result, logs, nil
 }
 
